@@ -1,238 +1,160 @@
 import os
 import time
-import csv
 import random
-# El examen pedira 'la media geometrica'
-# 
+import csv
 
-os.system('cls')
-
-# LISTAS
-
-lista_productos = ["Laptop", "Mouse", "Teclado", "Monitor", "Impresora", "Cámara", "Auriculares", "Altavoz", "Router", "Tablet"]
+lista_productos = ["Laptop", "Mouse", "Teclado", "Monitor",
+                   "Impresora", "Cámara", "Auriculares", "Altavoz", "Router", "Tablet"]
 lista_inventario = []
 lista_economicos = []
 lista_moderados = []
 lista_caros = []
 
-dict_estadisticas = {
-    'producto_mas_barato': None,
+diccionario_estadisticas = {
     'producto_mas_caro': None,
-    'promedio_precios': None,
+    'producto_mas_economico': None,
+    'promedio_productos': 0,
+    'suma_total_inventario': 0
 }
 
-# FUNCIONDES
-def generar_inventario(list_productos):
-    lista_inventario = []
-    for producto in list_productos:
-        cantidad = random.randint(1, 50)
-        precio_unitario = random.randint(10000, 1000000)
-        lista_inventario.append({"producto": producto, "cantidad": cantidad, "precio_unitario": precio_unitario})
-    return lista_inventario
 
-def clasificar_productos(list_inventario):
+# FUNCIONES
+def generar_inventario(lista_productos):
+    lista_inventario = []
+    for producto in lista_productos:
+        cantidad = random.randint(10, 50)
+        precio_unitario = random.randint(10000, 600000)
+        lista_inventario.append(
+            {'producto': producto, 'cantidad': cantidad, 'precio_unitario': precio_unitario})
+        return lista_inventario
+
+
+def clasificar_productos(lista_inventario):
+    lista_caros = []
     lista_economicos = []
     lista_moderados = []
-    lista_caros = []
-    for item in list_inventario:
-        precio = item["precio_unitario"]
+    for item in lista_inventario:
+        precio = item['precio_unitario']
         if precio < 100000:
             lista_economicos.append(item)
         elif precio >= 100000 and precio <= 500000:
             lista_moderados.append(item)
         else:
             lista_caros.append(item)
-    return lista_economicos, lista_moderados, lista_caros
+    return lista_caros, lista_moderados, lista_economicos
 
-def ver_estadisticas(list_inventario):
+
+def ver_estadisticas(lista_inventario):
     lista_precios = [item["precio_unitario"] for item in lista_inventario]
     producto_mas_caro = lista_inventario[0]
-    producto_mas_barato = lista_inventario[0]
+    producto_mas_economico = lista_inventario[0]
     suma_precios = 0
-    
-    for item in list_inventario:
+
+    for item in lista_inventario:
         precio = item["precio_unitario"]
-        suma_precios += precio # CONTADOR: Es igual a suma_precioss = suma_precios = precio
+        suma_precios += precio
         if precio > producto_mas_caro["precio_unitario"]:
             producto_mas_caro = item
-        if precio < producto_mas_barato["precio_unitario"]:
-            producto_mas_barato = item
+        if precio < producto_mas_economico["precio_unitario"]:
+            producto_mas_economico = item
 
-    promedio_precios = suma_precios / len(lista_precios)
+    promedio_productos = suma_precios / len(lista_precios)
     suma_total_inventario = 0
 
-    for item in list_inventario:
+    for item in lista_inventario:
         suma_total_inventario += item["cantidad"] * item["precio_unitario"]
 
     return {
-        "producto_mas_caro": producto_mas_caro,
-        "producto_mas_barato": producto_mas_barato,
-        "promedio_precios": promedio_precios,
-        "suma_total_inventario": suma_total_inventario
+        'producto_mas_caro': producto_mas_caro,
+        'producto_mas_economico': producto_mas_economico,
+        'promedio_productos': promedio_productos,
+        'suma_total_inventario': suma_total_inventario
     }
+
 
 def generar_reporte_csv(lista_inventario, nombre_archivo="reporte_inventario.csv"):
     with open(nombre_archivo, mode="w", newline="", encoding="utf-8") as archivo:
         csv_escritor = csv.writer(archivo)
-        csv_escritor.writerow(["Producto", "Cantidad", "Precio Unitario", "Valor Total"])
+        csv_escritor.writerow(
+            ["Producto", "Cantidad", "Precio Unitario", "Valor Total"])
         for item in lista_inventario:
             descuento = 0.1 if item["precio_unitario"] > 500000 else 0
-            valor_total = item["cantidad"] * item["precio_unitario"] * (1 - descuento)
-            csv_escritor.writerow([item["producto"], item["cantidad"], item["precio_unitario"], round(valor_total)])
+            valor_total = item["cantidad"] * \
+                item["precio_unitario"] * (1 - descuento)
+            csv_escritor.writerow(
+                [item["producto"], item["cantidad"], item["precio_unitario"], round(valor_total)])
 
-# Asignaciones
-bucle = 0
 
-while bucle == 0:
-    try:
-        os.system('cls')
-        print('»'*30)
-        print('| 1) | Asignar datos')
-        print('| 2) | Clasificacion de productos')
-        print('| 3) | Estadisticas del inventario')
-        print('| 4) | Generar reporte')
-        print('| 5) | Salir')
-        print('»'*30)
-        mm = int(input('Ingresar opcion\n »» '))
-        os.system('cls')
-        match mm:
-            case 1:
-                try:
-                    while mm == 1:
-                        print('Asignacion de datoss')
-                        print('»'*24)
-                        print('| 1) | Datos aleatorios |  ')
-                        print('| 2) | Salir            | ')
-                        print('»'*24)
-                        m1 = int(input('Ingresar opcion\n »» '))
-                        os.system('cls')
-                        match m1:
-                            case 1:
-                                print('»'*15)
-                                print('Agregar producto')
-                                print('»'*15)
-                            case 2:
-                                print('»'*30)
-                                print('Regresando al menu')
-                                print('»'*30)
-                                time.sleep(2)
-                            case _:
-                                print('»'*30)
-                                print('Ingresar opcion valida (1 o 2)')
-                                print('»'*30)
-                                time.sleep(2)
-                except:
-                    print('Ingresar opciones disponibles 1 o 2')
-                    time.sleep(2)
-            case 2:
-                try:
-                    while mm == 2:
-                        print('Clasificacion de productos')
-                        print('»'*30)
-                        print('| 1) | Productos economicos (>$100.000)')
-                        print('| 2) | Productos moderados ($100.000 - $500.000)')
-                        print('| 3) | Productos caros (<$500.000)')
-                        print('| 4) | Salir')
-                        print('»'*30)
-                        m2 = int(input('Ingresar opcion\n »» '))
-                        os.system('cls')
-                        match m2:
-                            case 1:
-                                print('Productos economicos')
-                            case 2:
-                                print('Productos moderados')
-                            case 3:
-                                print('Productos caros')
-                            case 4:
-                                print('»'*30)
-                                print('Regresando al menu')
-                                print('»'*30)
-                                time.sleep(2)
-                            case _:
-                                print('»'*30)
-                                print('Ingresar opcion valida (1 - 4)')
-                                print('»'*30)
-                                time.sleep(2)
-                except:
-                    print('Ingresar opciones disponibles 1 - 4')
-                    time.sleep(2)
-            case 3:
-                try:
-                    while mm == 3:
-                        print('Estadisticas del inventario')
-                        print('»'*30)
-                        print('| 1) | Producto mas caro')
-                        print('| 2) | Producto mas barato')
-                        print('| 3) | Promedio de precios')
-                        print('| 4) | Suma total del inventario')
-                        print('| 5) | Salir')
-                        print('»'*30)
-                        m3 = int(input('Ingresar opcion\n »» '))
-                        os.system('cls')
-                        match m3:
-                            case 1:
-                                print('Producto mas caro')
-                            case 2:
-                                print('Producto mas barato')
-                            case 3:
-                                print('Promedio de precios')
-                            case 4:
-                                print('Suma total del inventario')
-                            case 5:
-                                print('»'*30)
-                                print('Regresando al menu')
-                                print('»'*30)
-                                time.sleep(2)
-                            case _:
-                                print('»'*30)
-                                print('Ingresar opcion valida (1 - 4)')
-                                print('»'*30)
-                                time.sleep(2)
-                except:
-                    print('Ingresar opciones disponibles 1 - 5')
-                    time.sleep(2)
-            case 4:
-                try:
-                    while mm == 4:
-                        print('»'*30)
-                        print('menu de reportes')
-                        print('»'*30)
-                        print('| 1) | Calcula el valor total por producto (cantidad × precio unitario)')
-                        print('| 2) | Aplica un descuento del 10% en productos caros')
-                        print('| 3) | Exporta un archivo CSV con el detalle')
-                        print('| 4) | Salir')
-                        print('»'*30)
-                        m4 = int(input('Ingresar opcion\n »» '))
-                        os.system('cls')
-                        match m4:
-                            case 1:
-                                print('Total por producto')
-                            case 2:
-                                print('Aplicando descuento')
-                            case 3:
-                                print('Exportar a CSV')
-                            case 4:
-                                print('»'*30)
-                                print('Regresando al menu')
-                                print('»'*30)
-                                time.sleep(2)
-                            case _:
-                                print('»'*30)
-                                print('Ingresar opcion valida (1 - 4)')
-                                print('»'*30)
-                                time.sleep(2)
-                except:
-                    print('Ingresar opciones disponibles 1 - 4')
-                    time.sleep(2)
-            case 5:
-                print('Cerrando menu. . . ')
+while True:
+    os.system('cls')
+    print('Menu de accion')
+    print('»'*30)
+    print(' 1 » Generar inventario')
+    print(' 2 » Clasificar productos')
+    print(' 3 » Estadisticas de inventario')
+    print(' 4 » Generar reporte')
+    print(' 5 » Salir')
+    print('»'*30)
+    menu = int(input('Seleccione opcion \n »» '))
+    os.system('cls')
+    match menu:
+        case 1:
+            print('»'*30)
+            print('Inventario generado')
+            lista_inventario = generar_inventario(lista_productos)
+            print('»'*30)
+            time.sleep(1)
+        case 2:
+            if not lista_inventario:
+                print('Primero debe generar el inventario')
                 time.sleep(1)
-                break
-            case _:
-                print('Ingresar opcion valida (1 - 5)')
-                time.sleep(2)
-    except:
-        print('Ingresar opciones disponibles 1 o 5')
-        time.sleep(2)
-os.system('cls')
-print('Menu cerrado')
+                continue
+
+            print('»'*30)
+            print('Clasificacion de productos')
+            print('»'*30)
+
+            lista_caros, lista_moderados, lista_economicos = clasificar_productos(
+                lista_inventario)
+            print('Productos economicos')
+            for item in lista_economicos:
+                print(f' » {item["producto"]}: ${item["precio_unitario"]}')
+
+            print('Productos moderados')
+            for item in lista_moderados:
+                print(f' » {item["producto"]}: $ {item["precio_unitario"]}')
+
+            print('Productos caros')
+            for item in lista_caros:
+                print(f' » {item["producto"]}: ${item["precio_unitario"]}')
+            os.system('pause')
+        case 3:
+            if not lista_inventario:
+                print("Primero debe generar el inventario.")
+                continue
+
+            diccionario_estadisticas = ver_estadisticas(lista_inventario)
+            print("\nEstadísticas del inventario:")
+            print(
+                f"Producto más caro: {diccionario_estadisticas['producto_mas_caro']['producto']} ($ {diccionario_estadisticas['producto_mas_caro']['precio_unitario']})")
+            print(
+                f"Producto más barato: {diccionario_estadisticas['producto_mas_economico']['producto']} ($ {diccionario_estadisticas['producto_mas_economico']['precio_unitario']})")
+            print(
+                f"Promedio de precios: $ {diccionario_estadisticas['promedio_productos']:.2f}")
+            print(
+                f"Suma total del inventario: $ {diccionario_estadisticas['suma_total_inventario']:.2f}")
+            os.system('pause')
+        case 4:
+            if not lista_inventario:
+                print("Primero debe generar el inventario.")
+                continue
+
+            generar_reporte_csv(lista_inventario)
+            print("Reporte generado exitosamente como 'reporte_inventario.csv'.")
+
+        case 5:
+            print("Gracias por usar el sistema. ¡Hasta pronto!")
+            time.sleep(2)
+            break
+        case _:
+            print('test')
